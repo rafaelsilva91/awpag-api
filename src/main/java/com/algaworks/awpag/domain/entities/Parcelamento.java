@@ -40,7 +40,6 @@ public class Parcelamento {
     @Max(value = 12)
     private long quantidadeParcelas;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime data_criacao = LocalDateTime.now();
 
     @Valid

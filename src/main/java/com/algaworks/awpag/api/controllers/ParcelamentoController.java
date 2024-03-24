@@ -1,6 +1,8 @@
 package com.algaworks.awpag.api.controllers;
 
+import com.algaworks.awpag.api.mapper.ParcelamentoMapper;
 import com.algaworks.awpag.api.model.ParcelamentoModel;
+import com.algaworks.awpag.api.model.request.ParcelamentoRequest;
 import com.algaworks.awpag.domain.entities.Parcelamento;
 import com.algaworks.awpag.domain.services.ParcelamentoService;
 import jakarta.validation.Valid;
@@ -16,50 +18,49 @@ import java.util.Optional;
 public class ParcelamentoController {
 
     private final ParcelamentoService service;
+    private final ParcelamentoMapper parcelamentoMapper;
 
-    public ParcelamentoController(ParcelamentoService service) {
+
+    public ParcelamentoController(ParcelamentoService service, ParcelamentoMapper parcelamentoMapper) {
         this.service = service;
+        this.parcelamentoMapper = parcelamentoMapper;
     }
 
     @GetMapping
-    public List<Parcelamento> listar(){
-        return this.service.listar();
+    public List<ParcelamentoModel> listar() {
+        List<Parcelamento> parcelamentos = this.service.listar();
+        return parcelamentoMapper.toCollectionModel(parcelamentos);
+
     }
 
     @GetMapping("/{parcelamentoId}")
-    public ResponseEntity<ParcelamentoModel> buscar(@PathVariable Long parcelamentoId){
-        Optional<ParcelamentoModel> parcModel = Optional.ofNullable(this.service.buscar(parcelamentoId))
-                .map(parcelamento -> {
-                    var parcelamentoModel = new ParcelamentoModel();
-                    parcelamentoModel.setId(parcelamento.getId());
-                    parcelamentoModel.setDescricao(parcelamento.getDescricao());
-                    parcelamentoModel.setValorTotal(parcelamento.getValorTotal());
-                    parcelamentoModel.setParcelas((int) parcelamento.getQuantidadeParcelas());
-                    parcelamentoModel.setNomeCliente(parcelamento.getCliente().getNome());
-                    return parcelamentoModel;
-                });
+    public ResponseEntity<ParcelamentoModel> buscar(@PathVariable Long parcelamentoId) {
+        Optional<ParcelamentoModel> parcelamentoModel = Optional.ofNullable(this.service.buscar(parcelamentoId))
+                .map(parcelamentoMapper::toModel);
 
-        if(!parcModel.isPresent()){
+        if (!parcelamentoModel.isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(parcModel.get());
+        return ResponseEntity.ok().body(parcelamentoModel.get());
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Parcelamento cadastrar(@Valid @RequestBody Parcelamento parcelamento){
-        return this.service.salvar(parcelamento);
+    public ParcelamentoModel cadastrar(@Valid @RequestBody ParcelamentoRequest request) {
+        Parcelamento parcelamento = parcelamentoMapper.toEntity(request);
+        Parcelamento parcelamentoCadastrado = this.service.salvar(parcelamento);
+        return parcelamentoMapper.toModel(parcelamentoCadastrado);
     }
 
     @PutMapping("/{parcelamentoId}")
-    public ResponseEntity<Parcelamento> atualizar(@PathVariable Long parcelamentoId, @RequestBody Parcelamento parcelamento){
+    public ResponseEntity<ParcelamentoModel> atualizar(@PathVariable Long parcelamentoId, @RequestBody Parcelamento parcelamento) {
         Parcelamento p = this.service.atualizar(parcelamento, parcelamentoId);
-        return ResponseEntity.ok().body(p);
+        return ResponseEntity.ok().body(parcelamentoMapper.toModel(p));
     }
 
     @DeleteMapping("/{parcelamentoId}")
-    public ResponseEntity<Void> deletar(@PathVariable Long parcelamentoId){
+    public ResponseEntity<Void> deletar(@PathVariable Long parcelamentoId) {
         this.service.delete(parcelamentoId);
         return ResponseEntity.noContent().build();
     }

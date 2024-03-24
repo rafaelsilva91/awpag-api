@@ -26,7 +26,11 @@ public class ParcelamentoModel {
     private String descricao;
     private BigDecimal valorTotal;
     private Integer parcelas;
+
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime data_criacao = LocalDateTime.now();
-    private String nomeCliente;
+    private ClienteModel cliente;
+    //private String nomeCliente;
+
 
 }
