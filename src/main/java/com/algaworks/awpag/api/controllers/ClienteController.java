@@ -1,7 +1,7 @@
-package com.algaworks.awpag.api.controller;
+package com.algaworks.awpag.api.controllers;
 
-import com.algaworks.awpag.domain.model.Cliente;
-import com.algaworks.awpag.domain.service.ClienteService;
+import com.algaworks.awpag.domain.entities.Cliente;
+import com.algaworks.awpag.domain.services.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

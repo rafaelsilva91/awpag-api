@@ -1,7 +1,8 @@
-package com.algaworks.awpag.api.controller;
+package com.algaworks.awpag.api.controllers;
 
-import com.algaworks.awpag.domain.model.Parcelamento;
-import com.algaworks.awpag.domain.service.ParcelamentoService;
+import com.algaworks.awpag.api.model.ParcelamentoModel;
+import com.algaworks.awpag.domain.entities.Parcelamento;
+import com.algaworks.awpag.domain.services.ParcelamentoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,23 @@ public class ParcelamentoController {
     }
 
     @GetMapping("/{parcelamentoId}")
-    public ResponseEntity<Parcelamento> buscar(@PathVariable Long parcelamentoId){
-        Optional<Parcelamento> parcelamento = Optional.ofNullable(this.service.buscar(parcelamentoId));
+    public ResponseEntity<ParcelamentoModel> buscar(@PathVariable Long parcelamentoId){
+        Optional<ParcelamentoModel> parcModel = Optional.ofNullable(this.service.buscar(parcelamentoId))
+                .map(parcelamento -> {
+                    var parcelamentoModel = new ParcelamentoModel();
+                    parcelamentoModel.setId(parcelamento.getId());
+                    parcelamentoModel.setDescricao(parcelamento.getDescricao());
+                    parcelamentoModel.setValorTotal(parcelamento.getValorTotal());
+                    parcelamentoModel.setParcelas((int) parcelamento.getQuantidadeParcelas());
+                    parcelamentoModel.setNomeCliente(parcelamento.getCliente().getNome());
+                    return parcelamentoModel;
+                });
 
-        if(!parcelamento.isPresent()){
+        if(!parcModel.isPresent()){
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(parcelamento.get());
+        return ResponseEntity.ok().body(parcModel.get());
     }
 
     @ResponseStatus(HttpStatus.CREATED)

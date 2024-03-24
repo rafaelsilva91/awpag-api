@@ -1,8 +1,8 @@
-package com.algaworks.awpag.domain.service;
+package com.algaworks.awpag.domain.services;
 
 import com.algaworks.awpag.domain.exceptions.NegocioException;
-import com.algaworks.awpag.domain.model.Cliente;
-import com.algaworks.awpag.domain.repository.IClienteRepository;
+import com.algaworks.awpag.domain.entities.Cliente;
+import com.algaworks.awpag.domain.repositories.IClienteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

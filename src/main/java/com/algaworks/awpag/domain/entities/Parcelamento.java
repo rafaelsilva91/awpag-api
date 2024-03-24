@@ -1,4 +1,4 @@
-package com.algaworks.awpag.domain.model;
+package com.algaworks.awpag.domain.entities;
 
 
 import com.algaworks.awpag.domain.validation.IValidationGroups;
